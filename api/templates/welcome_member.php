@@ -41,8 +41,8 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #94A3B8; tracking: 1px; display: block; margin-bottom: 4px;">Initial Security Key</span>
-                                        <code style="font-size: 14px; font-weight: 700; color: #0F172A; font-family: Consolas, Monaco, monospace; background-color: #E2E8F0; padding: 3px 8px; border-radius: 6px;"><?php echo htmlspecialchars($password); ?></code>
+                                        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #94A3B8; tracking: 1px; display: block; margin-bottom: 4px;">Security Key</span>
+                                        <span style="font-size: 14px; font-weight: 700; color: #475569; font-style: italic;">Contact your Lead securely (via Slack or in person) to receive your initial security key.</span>
                                     </td>
                                 </tr>
                             </table>

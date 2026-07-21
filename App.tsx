@@ -103,34 +103,55 @@ const App: React.FC = () => {
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      const [c, p, t, r, tm] = await Promise.all([
+      const results = await Promise.allSettled([
         api.clients.list(),
         api.projects.list(),
         api.tasks.list(),
         api.notifications.list(),
         api.team.list()
       ]);
-      setClients(c);
-      setProjects(p);
-      setTasks(t);
+
+      const [clientsRes, projectsRes, tasksRes, notificationsRes, teamRes] = results;
+
+      if (clientsRes.status === 'fulfilled') {
+        setClients(clientsRes.value);
+      }
+      if (projectsRes.status === 'fulfilled') {
+        setProjects(projectsRes.value);
+      }
+      if (tasksRes.status === 'fulfilled') {
+        setTasks(tasksRes.value);
+      }
       
-      // Map API notifications to Layout's reminder structure
-      const mappedNotifications = Array.isArray(r) 
-        ? r.map((n: any) => ({
-            id: n.id,
-            title: n.message,
-            date: new Date(n.createdAt).toLocaleString(),
-            type: 'task' as const,
-            read: n.isRead,
-            userId: n.userId
-          }))
-        : [];
-        
-      setReminders(mappedNotifications);
-      setTeamMembers(tm);
+      if (notificationsRes.status === 'fulfilled') {
+        const r = notificationsRes.value;
+        const mappedNotifications = Array.isArray(r) 
+          ? r.map((n: any) => ({
+              id: n.id,
+              title: n.message,
+              date: new Date(n.createdAt).toLocaleString(),
+              type: 'task' as const,
+              read: n.isRead,
+              userId: n.userId
+            }))
+          : [];
+        setReminders(mappedNotifications);
+      }
+
+      if (teamRes.status === 'fulfilled') {
+        setTeamMembers(teamRes.value);
+      }
+
+      // Log or toast errors for failed parts
+      const failures = results
+        .map((r, i) => r.status === 'rejected' ? ['Clients', 'Projects', 'Tasks', 'Notifications', 'Team'][i] : null)
+        .filter(Boolean);
+
+      if (failures.length > 0) {
+        console.warn("CRM Sync warning: Failed to load: " + failures.join(', '));
+      }
     } catch (error: any) {
       console.error("API Load Failed", error);
-      alert("CRM Sync Error: " + error.message + "\nAPI URL in use: " + (import.meta.env.VITE_API_URL || 'http://localhost:3001') + "\nPlease check your browser console and make sure Apache is running.");
     } finally {
       setIsLoading(false);
     }

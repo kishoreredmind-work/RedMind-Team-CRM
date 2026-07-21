@@ -43,6 +43,18 @@ elseif ($resource === 'login' && $method === 'POST') {
     if (!$email || !$password) {
         respond(false, null, 'Missing required fields');
     }
+
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
+    // Rate Limiting Check (5 attempts in 15 minutes)
+    $limitStmt = $conn->prepare("SELECT COUNT(*) as failed_count FROM login_attempts WHERE (ip = ? OR email = ?) AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
+    $limitStmt->bind_param("ss", $ip, $email);
+    $limitStmt->execute();
+    $failedCount = $limitStmt->get_result()->fetch_assoc()['failed_count'] ?? 0;
+    
+    if ($failedCount >= 5) {
+        respond(false, null, 'Too many login attempts. Please try again after 15 minutes.');
+    }
     
     $stmt = $conn->prepare("SELECT id, password, name, role, status FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -50,12 +62,25 @@ elseif ($resource === 'login' && $method === 'POST') {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
+        // Log failed attempt
+        $logStmt = $conn->prepare("INSERT INTO login_attempts (ip, email) VALUES (?, ?)");
+        $logStmt->bind_param("ss", $ip, $email);
+        $logStmt->execute();
         respond(false, null, 'Invalid credentials');
     }
     
     $user = $result->fetch_assoc();
     if (!password_verify($password, $user['password'])) {
+        // Log failed attempt
+        $logStmt = $conn->prepare("INSERT INTO login_attempts (ip, email) VALUES (?, ?)");
+        $logStmt->bind_param("ss", $ip, $email);
+        $logStmt->execute();
         respond(false, null, 'Invalid credentials');
+    }
+
+    // Verify account status
+    if ($user['status'] !== 'APPROVED') {
+        respond(false, null, 'Forbidden: Your account status is ' . $user['status'] . '. Please contact your Lead for activation.');
     }
     
     // Generate JWT token

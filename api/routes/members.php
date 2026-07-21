@@ -82,11 +82,34 @@ elseif ($method === 'PUT' && $id) {
     $role = $input['role'] ?? null;
     $status = $input['status'] ?? null;
     
+    $uStmt = $conn->prepare("SELECT name, email, status FROM users WHERE id = ?");
+    $uStmt->bind_param("s", $id);
+    $uStmt->execute();
+    $existing = $uStmt->get_result()->fetch_assoc();
+    
+    if (!$existing) {
+        respond(false, null, 'Member not found');
+    }
+    
     $stmt = $conn->prepare("UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), status = COALESCE(?, status) WHERE id = ?");
     $stmt->bind_param("ssss", $name, $role, $status, $id);
     
     if ($stmt->execute()) {
-        respond(true, null, null, 'Member updated successfully');
+        $shouldNotify = ($status === 'APPROVED' && $existing['status'] !== 'APPROVED');
+        if ($shouldNotify) {
+            createNotification($conn, $id, "Your account has been approved by the Lead.", "/");
+            
+            respondAndContinue(true, null, null, 'Member updated successfully');
+            
+            $subject = "Your RedMind CRM Account is Approved";
+            $body = renderEmailTemplate('account_approved', [
+                'name' => $existing['name'],
+                'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+            ]);
+            sendMailNotification($existing['email'], $subject, $body);
+        } else {
+            respond(true, null, null, 'Member updated successfully');
+        }
     } else {
         respond(false, null, 'Failed to update member');
     }

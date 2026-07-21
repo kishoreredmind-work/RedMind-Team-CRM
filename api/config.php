@@ -153,6 +153,19 @@ if (mt_rand(1, 100) <= 2) {
     $conn->query("DELETE FROM notifications WHERE is_read = 1 AND created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)");
 }
 
+// Initialize login attempts table for database-backed rate limiting
+$conn->query("CREATE TABLE IF NOT EXISTS login_attempts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ip VARCHAR(45) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+// Clear attempts older than 24 hours (2% chance lottery check on request)
+if (mt_rand(1, 100) <= 2) {
+    $conn->query("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+}
+
 // ----------------------------------------------------
 // Authentication Helpers
 // ----------------------------------------------------

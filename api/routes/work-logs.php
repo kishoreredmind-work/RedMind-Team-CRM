@@ -139,11 +139,7 @@ elseif ($method === 'PUT' && $id) {
     
     $stmt = $conn->prepare("UPDATE work_logs SET user_id = COALESCE(?, user_id), task_id = COALESCE(?, task_id), date = COALESCE(?, date), hours = COALESCE(?, hours), description = COALESCE(?, description) WHERE id = ?");
     
-    if ($hours !== null) {
-        $stmt->bind_param("sssdss", $userId, $taskId, $date, $hours, $description, $id);
-    } else {
-        $stmt->bind_param("ssssss", $userId, $taskId, $date, $description, $description, $id);
-    }
+    $stmt->bind_param("ssssss", $userId, $taskId, $date, $hours, $description, $id);
     
     if ($stmt->execute()) {
         respond(true, null, null, 'Work log updated successfully');
