@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { User, UserRole, Reminder } from '../types';
+import { api } from '../services/api';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -187,22 +188,47 @@ const Layout: React.FC<LayoutProps> = ({
               {isNotificationsOpen && (
                 <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-3xl shadow-2xl border border-slate-100 z-50 overflow-hidden">
                   <div className="p-5 border-b border-slate-50 bg-slate-50/50">
-                    <h4 className="text-sm font-black text-slate-900">Reminders</h4>
+                    <h4 className="text-sm font-black text-slate-900">Notifications</h4>
                   </div>
                   <div className="max-h-80 overflow-y-auto">
                     {reminders.map(r => (
-                      <div key={r.id} className={`p-5 hover:bg-slate-50 border-b border-slate-50 flex items-start gap-4 transition-colors ${!r.read ? 'bg-blue-50/20' : ''}`}>
-                         <div className={`w-2 h-2 rounded-full mt-1.5 ${r.type === 'deadline' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
-                         <div>
+                      <div 
+                        key={r.id} 
+                        onClick={async () => {
+                          if (!r.read) {
+                            try {
+                              await api.notifications.markAsRead(r.id);
+                              setReminders(reminders.map(item => item.id === r.id ? {...item, read: true} : item));
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+                        }}
+                        className={`p-5 hover:bg-slate-50 border-b border-slate-50 flex items-start gap-4 transition-colors cursor-pointer ${!r.read ? 'bg-blue-50/20' : ''}`}
+                      >
+                         <div className={`w-2 h-2 rounded-full mt-1.5 ${!r.read ? 'bg-blue-500' : 'bg-slate-200'}`}></div>
+                         <div className="flex-1">
                             <p className="text-xs font-bold text-slate-800 leading-tight">{r.title}</p>
                             <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">{r.date}</p>
                          </div>
                       </div>
                     ))}
-                    {reminders.length === 0 && <div className="p-10 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No reminders</div>}
+                    {reminders.length === 0 && <div className="p-10 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No notifications</div>}
                   </div>
                   <div className="p-4 text-center">
-                     <button className="text-[10px] font-black text-slate-400 hover:text-black uppercase tracking-[0.2em]" onClick={() => setReminders(reminders.map(r => ({...r, read: true})))}>Mark all as read</button>
+                     <button 
+                       className="text-[10px] font-black text-slate-400 hover:text-black uppercase tracking-[0.2em]" 
+                       onClick={async () => {
+                         try {
+                           await api.notifications.markAsRead();
+                           setReminders(reminders.map(r => ({...r, read: true})));
+                         } catch (e) {
+                           console.error(e);
+                         }
+                       }}
+                     >
+                       Mark all as read
+                     </button>
                   </div>
                 </div>
               )}

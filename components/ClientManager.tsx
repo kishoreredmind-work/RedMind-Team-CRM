@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Client } from '../types';
 
 interface ClientManagerProps {
@@ -20,6 +21,7 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
     }
   }, [creationTrigger]);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', notes: '' });
 
   const resetForm = () => {
@@ -40,9 +42,8 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Delete client profile?')) {
-      setClients(prev => prev.filter(c => c.id !== id));
-    }
+    setClients(prev => prev.filter(c => c.id !== id));
+    setConfirmDelete(null);
   };
 
   const openEdit = (client: Client) => {
@@ -59,24 +60,19 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
           <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">ENTITY DATABASE MANAGEMENT</p>
         </div>
         {isAdmin && (
-          <button 
-            onClick={() => { resetForm(); setShowModal(true); }}
-            className="w-full sm:w-auto bg-black text-white px-8 py-3 rounded-full hover:scale-105 transition-all font-bold shadow-lg text-sm"
-          >
-            + Add Client
-          </button>
+          <button onClick={() => { resetForm(); setShowModal(true); }} className="w-full sm:w-auto bg-black hover:scale-105 transition-transform active:scale-95 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-full shadow-lg shadow-black/10">+ Add Client Profile</button>
         )}
       </div>
 
-      <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm">
+      <div className="bg-white border border-slate-100 rounded-[2rem] md:rounded-[2.5rem] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-50 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">
-                <th className="px-6 md:px-10 py-4 md:py-6">Identity</th>
-                <th className="px-6 md:px-10 py-4 md:py-6">Entity</th>
-                <th className="px-6 md:px-10 py-4 md:py-6">Contact</th>
-                {isAdmin && <th className="px-6 md:px-10 py-4 md:py-6 text-right">Actions</th>}
+              <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50/50">
+                <th className="px-6 md:px-10 py-5">Corporate / Direct Entity</th>
+                <th className="px-6 md:px-10 py-5">Sub-entity</th>
+                <th className="px-6 md:px-10 py-5">Point of Contact</th>
+                {isAdmin && <th className="px-6 md:px-10 py-5 text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -104,7 +100,7 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
                     <td className="px-6 md:px-10 py-4 md:py-6 text-right">
                       <div className="flex justify-end gap-2 md:gap-3 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEdit(client)} className="p-2 text-slate-400 hover:text-black transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                        <button onClick={() => handleDelete(client.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                        <button onClick={() => setConfirmDelete(client.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                       </div>
                     </td>
                   )}
@@ -116,7 +112,7 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
         {clients.length === 0 && <div className="p-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">No Database Records</div>}
       </div>
 
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-6 z-50">
           <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl w-full max-w-lg p-8 md:p-12 animate-in fade-in zoom-in duration-300">
             <h3 className="text-xl md:text-2xl font-black mb-8">Registry Entry</h3>
@@ -133,7 +129,36 @@ const ClientManager: React.FC<ClientManagerProps> = ({ clients, setClients, isAd
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-100 shadow-2xl w-full max-w-sm text-center animate-in zoom-in duration-300">
+            <div className="inline-flex p-4 bg-red-50 rounded-2xl text-red-600 mb-6">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2">Delete Client</h3>
+            <p className="text-slate-500 text-xs font-bold leading-relaxed mb-8">Are you sure you want to delete this client profile? All records will be removed.</p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 py-4 rounded-full font-black text-sm transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDelete(confirmDelete)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-full font-black text-sm transition-all shadow-xl shadow-red-600/10"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

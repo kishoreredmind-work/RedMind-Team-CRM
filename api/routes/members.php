@@ -1,6 +1,8 @@
 <?php
 // Team Members routes (aliases for users)
 
+$currentUser = getAuthenticatedUser();
+
 if ($method === 'GET' && !$id) {
     // Get all members
     $result = $conn->query("SELECT id, name, email, role, status FROM users ORDER BY name ASC");
@@ -28,7 +30,8 @@ elseif ($method === 'GET' && $id) {
 }
 
 elseif ($method === 'POST') {
-    // Create member (similar to signup)
+    requireLead();
+    
     $name = $input['name'] ?? null;
     $email = $input['email'] ?? null;
     $password = $input['password'] ?? null;
@@ -56,14 +59,25 @@ elseif ($method === 'POST') {
     $stmt->bind_param("ssssss", $memberId, $name, $email, $hashedPassword, $role, $status);
     
     if ($stmt->execute()) {
-        respond(true, ['id' => $memberId, 'name' => $name, 'email' => $email], null, 'Member created successfully');
+        // Send JSON response to browser immediately, closing connection
+        respondAndContinue(true, ['id' => $memberId, 'name' => $name, 'email' => $email], null, 'Member created successfully');
+        
+        $subject = "Welcome to Redmin Team CRM";
+        $body = renderEmailTemplate('welcome_member', [
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+        ]);
+        sendMailNotification($email, $subject, $body);
     } else {
         respond(false, null, 'Failed to create member');
     }
 }
 
 elseif ($method === 'PUT' && $id) {
-    // Update member
+    requireLead();
+    
     $name = $input['name'] ?? null;
     $role = $input['role'] ?? null;
     $status = $input['status'] ?? null;
@@ -79,7 +93,8 @@ elseif ($method === 'PUT' && $id) {
 }
 
 elseif ($method === 'DELETE' && $id) {
-    // Delete member
+    requireLead();
+    
     $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
     $stmt->bind_param("s", $id);
     

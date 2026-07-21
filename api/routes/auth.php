@@ -49,17 +49,25 @@ elseif ($resource === 'login' && $method === 'POST') {
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows === 0 || !password_verify($password, $result->fetch_assoc()['password'])) {
+    if ($result->num_rows === 0) {
         respond(false, null, 'Invalid credentials');
     }
     
     $user = $result->fetch_assoc();
+    if (!password_verify($password, $user['password'])) {
+        respond(false, null, 'Invalid credentials');
+    }
+    
+    // Generate JWT token
+    $token = generateToken($user['id'], $user['role']);
+    
     respond(true, [
         'id' => $user['id'],
         'email' => $email,
         'name' => $user['name'],
         'role' => $user['role'],
-        'status' => $user['status']
+        'status' => $user['status'],
+        'token' => $token
     ], null, 'Login successful');
 }
 
@@ -68,6 +76,12 @@ elseif ($resource === 'logout' && $method === 'POST') {
 }
 
 elseif ($resource === 'profile' && $id) {
+    // Secure profile endpoint
+    $currentUser = getAuthenticatedUser();
+    if ($currentUser['user_id'] !== $id && $currentUser['role'] !== 'LEAD') {
+        respond(false, null, 'Forbidden: Access denied to this profile');
+    }
+
     if ($method === 'GET') {
         $stmt = $conn->prepare("SELECT id, email, name, role, status, avatar_url FROM users WHERE id = ?");
         $stmt->bind_param("s", $id);

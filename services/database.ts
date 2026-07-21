@@ -12,14 +12,31 @@ interface ApiResponse<T> {
 async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_URL}${endpoint}`;
   
+  // Extract token from localStorage
+  const rawUser = localStorage.getItem('redmin_current_user');
+  let token = '';
+  if (rawUser) {
+    try {
+      const user = JSON.parse(rawUser);
+      token = user.token || '';
+    } catch (e) {}
+  }
+  
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : '',
         ...options?.headers,
       },
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem('redmin_current_user');
+      window.location.reload();
+      throw new Error('Unauthorized');
+    }
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
@@ -151,11 +168,19 @@ export const database = {
       body: JSON.stringify(data),
     }),
     update: async (id: string, data: any) => apiCall(`/members/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
-    delete: async (id: string) => apiCall(`/members/${id}`, { method: 'DELETE' }),
-  },
-};
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+      delete: async (id: string) => apiCall(`/members/${id}`, { method: 'DELETE' }),
+    },
+  
+    // Notifications
+    notifications: {
+      getAll: async () => apiCall('/notifications'),
+      markAsRead: async (id?: string) => apiCall(id ? `/notifications/${id}` : '/notifications', {
+        method: 'PUT'
+      })
+    }
+  };
 
 export default database;

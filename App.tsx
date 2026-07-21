@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { User, UserRole, UserStatus, Client, Project, Task, Reminder } from './types';
 import { database } from './services/database';
+import { api } from './services/api';
 import Login from './components/Login';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
@@ -106,16 +107,30 @@ const App: React.FC = () => {
         api.clients.list(),
         api.projects.list(),
         api.tasks.list(),
-        api.reminders.list(),
+        api.notifications.list(),
         api.team.list()
       ]);
       setClients(c);
       setProjects(p);
       setTasks(t);
-      setReminders(r);
+      
+      // Map API notifications to Layout's reminder structure
+      const mappedNotifications = Array.isArray(r) 
+        ? r.map((n: any) => ({
+            id: n.id,
+            title: n.message,
+            date: new Date(n.createdAt).toLocaleString(),
+            type: 'task' as const,
+            read: n.isRead,
+            userId: n.userId
+          }))
+        : [];
+        
+      setReminders(mappedNotifications);
       setTeamMembers(tm);
-    } catch (error) {
+    } catch (error: any) {
       console.error("API Load Failed", error);
+      alert("CRM Sync Error: " + error.message + "\nAPI URL in use: " + (import.meta.env.VITE_API_URL || 'http://localhost:3001') + "\nPlease check your browser console and make sure Apache is running.");
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +237,7 @@ const App: React.FC = () => {
           {activeTab === 'clients' && <ClientManager clients={clients} setClients={setClients} isAdmin={isLead} creationTrigger={creationTrigger === 'client'} />}
           {activeTab === 'projects' && <ProjectManager projects={projects} setProjects={setProjects} clients={clients} teamMembers={teamMembers} isAdmin={isLead} currentUserId={currentUser.id} creationTrigger={creationTrigger === 'project'} selectedId={selectedId} />}
           {activeTab === 'tasks' && <TaskManager tasks={tasks} setTasks={setTasks} projects={projects} teamMembers={teamMembers} isAdmin={isLead} currentUserId={currentUser.id} creationTrigger={creationTrigger === 'task'} selectedId={selectedId} />}
-          {activeTab === 'hub' && <TeamHub members={teamMembers} tasks={tasks} isAdmin={isLead} onNavigate={handleNavigate} />}
+          {activeTab === 'hub' && <TeamHub members={teamMembers} tasks={tasks} isAdmin={isLead} refreshMembers={fetchAllData} onNavigate={handleNavigate} />}
           {activeTab === 'documents' && <DocumentManager projects={projects} tasks={tasks} />}
           {activeTab === 'settings' && <Settings user={currentUser} onUpdateUser={fetchAllData} />}
         </>

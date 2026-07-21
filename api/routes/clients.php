@@ -1,8 +1,10 @@
 <?php
 // Clients routes
 
+$currentUser = getAuthenticatedUser();
+
 if ($method === 'GET' && !$id) {
-    // Get all clients
+    // Get all clients (available to all authenticated users)
     $result = $conn->query("SELECT id, name, company, email, phone, notes, created_by FROM clients ORDER BY created_at DESC");
     $clients = [];
     
@@ -28,13 +30,14 @@ elseif ($method === 'GET' && $id) {
 }
 
 elseif ($method === 'POST') {
-    // Create client
+    requireLead();
+    
     $name = $input['name'] ?? null;
     $company = $input['company'] ?? null;
     $email = $input['email'] ?? null;
     $phone = $input['phone'] ?? null;
     $notes = $input['notes'] ?? null;
-    $created_by = $input['created_by'] ?? null;
+    $created_by = $currentUser['user_id'];
     
     if (!$name) {
         respond(false, null, 'Client name is required');
@@ -53,7 +56,8 @@ elseif ($method === 'POST') {
 }
 
 elseif ($method === 'PUT' && $id) {
-    // Update client
+    requireLead();
+    
     $name = $input['name'] ?? null;
     $company = $input['company'] ?? null;
     $email = $input['email'] ?? null;
@@ -71,7 +75,8 @@ elseif ($method === 'PUT' && $id) {
 }
 
 elseif ($method === 'DELETE' && $id) {
-    // Delete client
+    requireLead();
+    
     $stmt = $conn->prepare("DELETE FROM clients WHERE id = ?");
     $stmt->bind_param("s", $id);
     

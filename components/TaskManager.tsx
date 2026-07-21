@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Task, Project, TaskStatus, TaskPriority, User, UserRole } from '../types';
 import { api } from '../services/api';
 import WorkLogModal from './WorkLogModal';
@@ -204,7 +205,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ tasks, setTasks, projects, is
       </div>
 
       {/* 3. MODALS */}
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-6 z-50">
           <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-xl p-12 animate-in fade-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-10">
@@ -247,7 +248,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({ tasks, setTasks, projects, is
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {activeWorkLogTask && (

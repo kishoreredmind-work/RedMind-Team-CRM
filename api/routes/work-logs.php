@@ -1,9 +1,21 @@
 <?php
 // Work logs routes
 
+$currentUser = getAuthenticatedUser();
+
 if ($method === 'GET' && !$id && $resource !== 'user') {
-    // Get all work logs
-    $result = $conn->query("SELECT id, user_id as userId, task_id as taskId, date, hours, description FROM work_logs ORDER BY date DESC");
+    // Get all work logs (Leads see all, Members see only their own)
+    if ($currentUser['role'] === 'LEAD') {
+        $result = $conn->query("SELECT id, user_id as userId, task_id as taskId, date, hours, description FROM work_logs ORDER BY date DESC");
+    } else {
+        $stmt = $conn->prepare("SELECT id, user_id as userId, task_id as taskId, date, hours, description 
+                                FROM work_logs 
+                                WHERE user_id = ? 
+                                ORDER BY date DESC");
+        $stmt->bind_param("s", $currentUser['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    }
     $logs = [];
     
     while ($row = $result->fetch_assoc()) {
@@ -14,7 +26,11 @@ if ($method === 'GET' && !$id && $resource !== 'user') {
 }
 
 elseif ($method === 'GET' && $resource === 'user' && $id) {
-    // Get work logs by user
+    // Get work logs by user (Members can only fetch their own)
+    if ($currentUser['role'] !== 'LEAD' && $id !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Access denied to these logs');
+    }
+    
     $stmt = $conn->prepare("SELECT id, user_id as userId, task_id as taskId, date, hours, description FROM work_logs WHERE user_id = ? ORDER BY date DESC");
     $stmt->bind_param("s", $id);
     $stmt->execute();
@@ -39,11 +55,16 @@ elseif ($method === 'GET' && $id) {
         respond(false, null, 'Work log not found');
     }
     
-    respond(true, $result->fetch_assoc());
+    $log = $result->fetch_assoc();
+    
+    if ($currentUser['role'] !== 'LEAD' && $log['userId'] !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Access denied to this log');
+    }
+    
+    respond(true, $log);
 }
 
 elseif ($method === 'POST') {
-    // Create work log
     $userId = $input['userId'] ?? null;
     $taskId = $input['taskId'] ?? null;
     $date = $input['date'] ?? null;
@@ -52,6 +73,30 @@ elseif ($method === 'POST') {
     
     if (!$userId || !$taskId || !$date || !$hours) {
         respond(false, null, 'Missing required fields');
+    }
+    
+    // Team Members can only create logs for themselves
+    if ($currentUser['role'] !== 'LEAD' && $userId !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Cannot log work for another user');
+    }
+    
+    // Verify task assignment / project membership
+    $taskStmt = $conn->prepare("SELECT project_id, assigned_to FROM tasks WHERE id = ?");
+    $taskStmt->bind_param("s", $taskId);
+    $taskStmt->execute();
+    $task = $taskStmt->get_result()->fetch_assoc();
+    
+    if (!$task) {
+        respond(false, null, 'Task not found');
+    }
+    
+    if ($currentUser['role'] !== 'LEAD' && $task['assigned_to'] !== $currentUser['user_id']) {
+        $checkStmt = $conn->prepare("SELECT 1 FROM project_members WHERE project_id = ? AND member_id = ?");
+        $checkStmt->bind_param("ss", $task['project_id'], $currentUser['user_id']);
+        $checkStmt->execute();
+        if ($checkStmt->get_result()->num_rows === 0) {
+            respond(false, null, 'Forbidden: You do not have access to this task');
+        }
     }
     
     $logId = generateUUID();
@@ -67,12 +112,30 @@ elseif ($method === 'POST') {
 }
 
 elseif ($method === 'PUT' && $id) {
-    // Update work log
+    // Check ownership
+    $logStmt = $conn->prepare("SELECT user_id FROM work_logs WHERE id = ?");
+    $logStmt->bind_param("s", $id);
+    $logStmt->execute();
+    $log = $logStmt->get_result()->fetch_assoc();
+    
+    if (!$log) {
+        respond(false, null, 'Work log not found');
+    }
+    
+    if ($currentUser['role'] !== 'LEAD' && $log['user_id'] !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Access denied');
+    }
+    
     $userId = $input['userId'] ?? null;
     $taskId = $input['taskId'] ?? null;
     $date = $input['date'] ?? null;
     $hours = $input['hours'] ?? null;
     $description = $input['description'] ?? null;
+    
+    // Prevent changing the user of the work log to someone else if not Lead
+    if ($currentUser['role'] !== 'LEAD' && $userId !== null && $userId !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Cannot change user assigned to log');
+    }
     
     $stmt = $conn->prepare("UPDATE work_logs SET user_id = COALESCE(?, user_id), task_id = COALESCE(?, task_id), date = COALESCE(?, date), hours = COALESCE(?, hours), description = COALESCE(?, description) WHERE id = ?");
     
@@ -90,7 +153,20 @@ elseif ($method === 'PUT' && $id) {
 }
 
 elseif ($method === 'DELETE' && $id) {
-    // Delete work log
+    // Check ownership
+    $logStmt = $conn->prepare("SELECT user_id FROM work_logs WHERE id = ?");
+    $logStmt->bind_param("s", $id);
+    $logStmt->execute();
+    $log = $logStmt->get_result()->fetch_assoc();
+    
+    if (!$log) {
+        respond(false, null, 'Work log not found');
+    }
+    
+    if ($currentUser['role'] !== 'LEAD' && $log['user_id'] !== $currentUser['user_id']) {
+        respond(false, null, 'Forbidden: Access denied');
+    }
+    
     $stmt = $conn->prepare("DELETE FROM work_logs WHERE id = ?");
     $stmt->bind_param("s", $id);
     

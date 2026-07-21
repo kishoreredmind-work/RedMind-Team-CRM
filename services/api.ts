@@ -233,6 +233,28 @@ export const api = {
     },
     updateStatus: async (userId: string, status: UserStatus): Promise<void> => {
       await database.members.update(userId, { status });
+    },
+    create: async (data: any): Promise<User> => {
+      const result = await database.members.create(data);
+      return {
+        id: result?.id || crypto.randomUUID(),
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        status: data.status || 'APPROVED'
+      };
+    },
+    delete: async (id: string): Promise<void> => {
+      await database.members.delete(id);
+    }
+  },
+
+  notifications: {
+    list: async (): Promise<any[]> => {
+      return await database.notifications.getAll();
+    },
+    markAsRead: async (id?: string): Promise<void> => {
+      await database.notifications.markAsRead(id);
     }
   }
 };

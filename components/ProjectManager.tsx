@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Project, Client, User, ProjectStatus, ProjectLinks } from '../types';
 import WorkDayTracker from './WorkDayTracker';
 import { calculateWorkingDays } from '../services/workDays';
@@ -215,7 +216,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ projects, setProjects, 
         })}
       </div>
 
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-6 z-50">
           <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-3xl p-10 animate-in fade-in zoom-in duration-300 text-black max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-10">
@@ -309,7 +310,8 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ projects, setProjects, 
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

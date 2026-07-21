@@ -15,6 +15,12 @@ $action = $parts[0] ?? null;
 $resource = $parts[1] ?? null;
 $id = $parts[2] ?? null;
 
+// Map direct CRUD endpoints (e.g. /members/123) correctly
+if ($action !== 'auth' && count($parts) === 2) {
+    $id = $parts[1];
+    $resource = null;
+}
+
 // Get JSON input
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
@@ -34,6 +40,8 @@ try {
         require 'routes/comments.php';
     } elseif ($action === 'members') {
         require 'routes/members.php';
+    } elseif ($action === 'notifications') {
+        require 'routes/notifications.php';
     } else {
         respond(false, null, 'Endpoint not found', null);
     }
