@@ -126,6 +126,9 @@ export const api = {
 
       const result = await database.projects.create(payload);
       return mapProject({ ...payload, ...result });
+    },
+    delete: async (id: string): Promise<void> => {
+      await database.projects.delete(id);
     }
   },
 
@@ -190,7 +193,8 @@ export const api = {
             taskId: c.taskId ?? c.task_id,
             authorId: c.authorId ?? c.user_id ?? c.userId,
             body: c.body ?? c.content ?? '',
-            createdAt: c.createdAt ?? c.created_at ?? new Date().toISOString()
+            createdAt: c.createdAt ?? c.created_at ?? new Date().toISOString(),
+            userName: c.userName ?? c.user_name ?? 'Specialist'
           }))
         : [];
     },
@@ -208,6 +212,13 @@ export const api = {
         body: data.body || '',
         createdAt: new Date().toISOString()
       };
+    }
+  },
+
+  activityLogs: {
+    list: async (): Promise<any[]> => {
+      const data = await database.activityLogs.getAll();
+      return Array.isArray(data) ? data : [];
     }
   },
 

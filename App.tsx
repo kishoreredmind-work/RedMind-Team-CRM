@@ -13,6 +13,9 @@ import TaskManager from './components/TaskManager';
 import TeamHub from './components/TeamHub';
 import DocumentManager from './components/DocumentManager';
 import Settings from './components/Settings';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import CalendarView from './components/CalendarView';
+import AuditLogs from './components/AuditLogs';
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -23,7 +26,9 @@ const App: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('redmin_active_tab') || 'dashboard';
+  });
   const [creationTrigger, setCreationTrigger] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,6 +41,7 @@ const App: React.FC = () => {
 
   const handleNavigate = (tab: string, id?: string) => {
     setActiveTab(tab);
+    localStorage.setItem('redmin_active_tab', tab);
     if (id) {
       setSelectedId(id);
       // Clear after a delay to allow the target component to catch it
@@ -85,7 +91,6 @@ const App: React.FC = () => {
         console.error('Stored user parse failed', error);
         localStorage.removeItem(currentUserKey);
         setCurrentUser(null);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -100,8 +105,42 @@ const App: React.FC = () => {
     }
   }, [currentUser]);
 
+  // Lightweight Background Polling connection for reliability
+  useEffect(() => {
+    if (!currentUser || currentUser.status !== UserStatus.APPROVED) return;
+
+    // Initial silent data sync
+    fetchAllData();
+
+    // Check for notifications and update state in the background every 12 seconds
+    const interval = setInterval(() => {
+      api.notifications.list().then(r => {
+        const mappedNotifications = Array.isArray(r) 
+          ? r.map((n: any) => ({
+              id: n.id,
+              title: n.message,
+              date: new Date(n.createdAt).toLocaleString(),
+              type: 'task' as const,
+              read: n.isRead,
+              userId: n.userId
+            }))
+          : [];
+        setReminders(mappedNotifications);
+      }).catch(err => {
+        console.warn("Background sync warning:", err);
+      });
+    }, 12000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [currentUser]);
+
   const fetchAllData = async () => {
-    setIsLoading(true);
+    // Only show full-page loading spinner if we don't have any cached data
+    if (clients.length === 0 && projects.length === 0 && tasks.length === 0) {
+      setIsLoading(true);
+    }
     try {
       const results = await Promise.allSettled([
         api.clients.list(),
@@ -159,6 +198,7 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem(currentUserKey);
+    localStorage.removeItem('redmin_active_tab');
     setCurrentUser(null);
     setActiveTab('dashboard');
   };
@@ -259,6 +299,9 @@ const App: React.FC = () => {
           {activeTab === 'projects' && <ProjectManager projects={projects} setProjects={setProjects} clients={clients} teamMembers={teamMembers} isAdmin={isLead} currentUserId={currentUser.id} creationTrigger={creationTrigger === 'project'} selectedId={selectedId} />}
           {activeTab === 'tasks' && <TaskManager tasks={tasks} setTasks={setTasks} projects={projects} teamMembers={teamMembers} isAdmin={isLead} currentUserId={currentUser.id} creationTrigger={creationTrigger === 'task'} selectedId={selectedId} />}
           {activeTab === 'hub' && <TeamHub members={teamMembers} tasks={tasks} isAdmin={isLead} refreshMembers={fetchAllData} onNavigate={handleNavigate} />}
+          {activeTab === 'analytics' && <AnalyticsDashboard projects={projects} tasks={tasks} teamMembers={teamMembers} />}
+          {activeTab === 'calendar' && <CalendarView projects={projects} tasks={tasks} />}
+          {activeTab === 'audit-logs' && <AuditLogs />}
           {activeTab === 'documents' && <DocumentManager projects={projects} tasks={tasks} />}
           {activeTab === 'settings' && <Settings user={currentUser} onUpdateUser={fetchAllData} />}
         </>

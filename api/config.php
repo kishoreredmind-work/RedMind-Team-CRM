@@ -1,4 +1,16 @@
 <?php
+// Define robust env getter helper
+function getEnvVar($key, $default = null) {
+    if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+        return $_SERVER[$key];
+    }
+    if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+        return $_ENV[$key];
+    }
+    $val = getenv($key);
+    return ($val !== false && $val !== '') ? $val : $default;
+}
+
 // Load environment variables from .env file if it exists
 if (file_exists(__DIR__ . '/.env')) {
     $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -18,22 +30,20 @@ if (file_exists(__DIR__ . '/.env')) {
             // Remove wrapping single or double quotes
             $val = preg_replace('/^([\'"])(.*)\1$/', '$2', $val);
             
-            // Populate environment arrays
-            if (!array_key_exists($key, $_SERVER) && !array_key_exists($key, $_ENV)) {
-                putenv("{$key}={$val}");
-                $_ENV[$key] = $val;
-                $_SERVER[$key] = $val;
-            }
+            // Populate environment arrays (always overwrite for consistency)
+            putenv("{$key}={$val}");
+            $_ENV[$key] = $val;
+            $_SERVER[$key] = $val;
         }
     }
 }
 
 // Database configuration (loads from environment variables, or falls back to defaults)
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASSWORD', getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : '');
-define('DB_NAME', getenv('DB_NAME') ?: 'redmin_crm');
-define('DB_PORT', (int)(getenv('DB_PORT') ?: 3306));
+define('DB_HOST', getEnvVar('DB_HOST', 'localhost'));
+define('DB_PORT', (int)getEnvVar('DB_PORT', 3306));
+define('DB_USER', getEnvVar('DB_USER', 'root'));
+define('DB_PASSWORD', getEnvVar('DB_PASSWORD', ''));
+define('DB_NAME', getEnvVar('DB_NAME', 'redmin_crm'));
 
 // Create connection
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
@@ -166,6 +176,27 @@ if (mt_rand(1, 100) <= 2) {
     $conn->query("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)");
 }
 
+// Initialize comments table for task discussions
+$conn->query("CREATE TABLE IF NOT EXISTS comments (
+  id VARCHAR(36) PRIMARY KEY,
+  task_id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
+// Initialize activity_logs table for audit tracking
+$conn->query("CREATE TABLE IF NOT EXISTS activity_logs (
+  id VARCHAR(36) PRIMARY KEY,
+  user_id VARCHAR(36) NOT NULL,
+  action VARCHAR(255) NOT NULL,
+  details TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
 // ----------------------------------------------------
 // Authentication Helpers
 // ----------------------------------------------------
@@ -182,7 +213,7 @@ if (!function_exists('getallheaders')) {
 }
 
 function generateToken($userId, $role) {
-    $secret = getenv('JWT_SECRET') ?: 'default_redmin_crm_secret_key_12345';
+    $secret = getEnvVar('JWT_SECRET') ?: 'default_redmin_crm_secret_key_12345';
     $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
     $payload = json_encode([
         'user_id' => $userId,
@@ -205,7 +236,7 @@ function verifyToken($token) {
     if (count($parts) !== 3) return null;
     
     list($base64UrlHeader, $base64UrlPayload, $base64UrlSignature) = $parts;
-    $secret = getenv('JWT_SECRET') ?: 'default_redmin_crm_secret_key_12345';
+    $secret = getEnvVar('JWT_SECRET') ?: 'default_redmin_crm_secret_key_12345';
     
     $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
     $expectedSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
@@ -223,6 +254,12 @@ function verifyToken($token) {
 function getAuthenticatedUser() {
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    
+    // Fallback for Apache/PHP CGI/FastCGI environments
+    if (empty($authHeader)) {
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    }
+    
     if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         $token = $matches[1];
         $payload = verifyToken($token);
@@ -251,16 +288,23 @@ function createNotification($conn, $userId, $message, $link = null) {
     $stmt->execute();
 }
 
+function logActivity($conn, $userId, $action, $details) {
+    $id = generateUUID();
+    $stmt = $conn->prepare("INSERT INTO activity_logs (id, user_id, action, details) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $id, $userId, $action, $details);
+    $stmt->execute();
+}
+
 // ----------------------------------------------------
 // SMTP / Email Helper
 // ----------------------------------------------------
 function sendMailNotification($toEmail, $subject, $messageBody) {
-    $smtpHost = getenv('SMTP_HOST');
-    $smtpUser = getenv('SMTP_USER');
-    $smtpPass = getenv('SMTP_PASS');
-    $smtpPort = getenv('SMTP_PORT') ?: 587;
-    $smtpSecure = getenv('SMTP_SECURE') ?: 'tls';
-    $fromEmail = getenv('SMTP_FROM') ?: 'no-reply@mydomain.com';
+    $smtpHost = getEnvVar('SMTP_HOST');
+    $smtpUser = getEnvVar('SMTP_USER');
+    $smtpPass = getEnvVar('SMTP_PASS');
+    $smtpPort = getEnvVar('SMTP_PORT', 587);
+    $smtpSecure = getEnvVar('SMTP_SECURE', 'tls');
+    $fromEmail = getEnvVar('SMTP_FROM', 'no-reply@mydomain.com');
 
     if (!$smtpHost) {
         $headers = "MIME-Version: 1.0\r\n";

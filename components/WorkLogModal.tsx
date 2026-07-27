@@ -192,13 +192,17 @@ const WorkLogModal: React.FC<WorkLogModalProps> = ({ task, onClose, currentUser 
                 {/* Comment List */}
                 <div className="space-y-6">
                    {comments.map(comment => (
-                     <div key={comment.id} className="flex gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-slate-100 flex-shrink-0" />
+                     <div key={comment.id} className="flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 flex items-center justify-center font-black text-xs text-slate-500 uppercase">
+                          {comment.userName?.slice(0, 2)}
+                        </div>
                         <div className="flex-1">
-                           <div className="bg-slate-50 p-5 rounded-[1.5rem] relative">
+                           <div className="bg-slate-50 p-5 rounded-[1.5rem] relative border border-slate-100">
                              <p className="text-sm text-slate-700 font-bold leading-relaxed">{comment.body}</p>
                            </div>
-                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-2 ml-2">{new Date(comment.createdAt).toLocaleDateString()} • Sync Ref #{comment.id.slice(0,4)}</p>
+                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-2 ml-2">
+                             {comment.userName} &bull; {new Date(comment.createdAt).toLocaleString()} &bull; Sync Ref #{comment.id.slice(0,4)}
+                           </p>
                         </div>
                      </div>
                    ))}

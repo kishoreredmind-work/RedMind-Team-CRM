@@ -42,6 +42,10 @@ try {
         require 'routes/members.php';
     } elseif ($action === 'notifications') {
         require 'routes/notifications.php';
+    } elseif ($action === 'activity-logs') {
+        require 'routes/activity-logs.php';
+    } elseif ($action === 'sse-notifications') {
+        require 'routes/sse-notifications.php';
     } else {
         respond(false, null, 'Endpoint not found', null);
     }

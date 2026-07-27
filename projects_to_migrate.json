@@ -1,0 +1,793 @@
+[
+    {
+        "name": "Lifeezi",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://lifeezi.com/",
+        "category": "Website"
+    },
+    {
+        "name": "London Dental Centre",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://dentalcourse.om/",
+        "category": "Website"
+    },
+    {
+        "name": "VNFC India",
+        "description": "Type: E-Commerce. Notes: ",
+        "status": "Completed",
+        "website": "https://vnfcindia.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Joliojobs",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://joliojobs.in/",
+        "category": "Website"
+    },
+    {
+        "name": "Yaazh Physio",
+        "description": "Type: Website & Portfolio. Notes: Portfolio: https://portfolio.yaazhphysio.com/",
+        "status": "Completed",
+        "website": "https://yaazhphysio.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Most India",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://mostindia.in/",
+        "category": "Website"
+    },
+    {
+        "name": "Hotel Deepakam Inn",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://hoteldeepakam.in/",
+        "category": "Website"
+    },
+    {
+        "name": "City Park Electronics",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://cityparkelectronics.ae",
+        "category": "Website"
+    },
+    {
+        "name": "Rayie Petro Chemical",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://rayiepetrochem.com",
+        "category": "Website"
+    },
+    {
+        "name": "Zspeciality",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://zspeciality.com",
+        "category": "Website"
+    },
+    {
+        "name": "ARN Travels",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://arntravels.com",
+        "category": "Website"
+    },
+    {
+        "name": "Sahasraa Promoters",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://sahasrarapromoters.com",
+        "category": "Website"
+    },
+    {
+        "name": "DMK Engineering Wing",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://dmkengwing.in",
+        "category": "Website"
+    },
+    {
+        "name": "SKP Karuna",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://skpkaruna.com",
+        "category": "Website"
+    },
+    {
+        "name": "Madras Paya House",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://madraspayahouse.com",
+        "category": "Website"
+    },
+    {
+        "name": "Raji Handicrafts",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://rajihandicrafts.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Shri Accounting",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://shriaccounting.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Abirami Grand Inn",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://abiramigrandinn.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Nextron LLC",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://nextronllc.com",
+        "category": "Website"
+    },
+    {
+        "name": "Annai Fashions",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://annaifashions.com",
+        "category": "Website"
+    },
+    {
+        "name": "Sashti Groups",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://sashtigroups.com",
+        "category": "Website"
+    },
+    {
+        "name": "Think It Stamp It",
+        "description": "Type: E-Commerce. Notes: ",
+        "status": "Completed",
+        "website": "https://thinkitstampit.com",
+        "category": "Website"
+    },
+    {
+        "name": "ISA Chennai",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://isachennaicity.in/",
+        "category": "Website"
+    },
+    {
+        "name": "BookCPD",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://bookcpd.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Startlines",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://startlinestech.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Vertical Lines",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://verticallinestech.com/",
+        "category": "Website"
+    },
+    {
+        "name": "TBH",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://thinkbeyondhorizon.in/",
+        "category": "Website"
+    },
+    {
+        "name": "i2 Studio",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://thei2studio.com",
+        "category": "Website"
+    },
+    {
+        "name": "Kohinoor Transport",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://kohinoortransports.com",
+        "category": "Website"
+    },
+    {
+        "name": "EV Mobility Services",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://evmobilityservices.com",
+        "category": "Website"
+    },
+    {
+        "name": "Angel One Namakkal",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://angelnamakkal.com",
+        "category": "Website"
+    },
+    {
+        "name": "BNR Namakkal",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://bnrnamakkal.com",
+        "category": "Website"
+    },
+    {
+        "name": "Shams Abu Dhabi",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://shamsabudhabi.ae",
+        "category": "Website"
+    },
+    {
+        "name": "Travel Buddy",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://travelbuddy.ae/",
+        "category": "Website"
+    },
+    {
+        "name": "Veltech Corporate Services",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "Completed",
+        "website": "https://veltechcorporateservices.com",
+        "category": "Website"
+    },
+    {
+        "name": "The i2 Real Estate",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://thei2realestate.com",
+        "category": "Website"
+    },
+    {
+        "name": "Little Mouse Computer",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://littlemousecomputers.com",
+        "category": "Website"
+    },
+    {
+        "name": "Asian Institution Trichy",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://asianinstitutiontrichy.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Iris Garden",
+        "description": "Type: Booking Platform. Notes: ",
+        "status": "Completed",
+        "website": "https://ilgiardinodiiris.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Saravana Traders",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://saravanatraders.com/",
+        "category": "Website"
+    },
+    {
+        "name": "NRI Property Management",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://nri.redmindtechnologies.com/",
+        "category": "Website"
+    },
+    {
+        "name": "MM Association",
+        "description": "Type: Website. Notes: ",
+        "status": "Completed",
+        "website": "https://mmassociatestri.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Startlines Tech",
+        "description": "Type: E-Commerce (Re-Design). Notes: ",
+        "status": "In Progress",
+        "website": "https://startlinestech.com/",
+        "category": "Website"
+    },
+    {
+        "name": "The Purple Tea",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "In Progress",
+        "website": "https://demo.thepurpleteachennai.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Cozy Linens Erode",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "In Progress",
+        "website": "https://demo.cozylinenserode.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Thalia-da",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "In Progress",
+        "website": "https://thalia-da.redmindtechnologies.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Vallalar Organic Farming",
+        "description": "Type: E-Commerce. Notes: ",
+        "status": "In Progress",
+        "website": "https://staging.vallalarorganicfarm.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Trimfab",
+        "description": "Type: Website. Notes: ",
+        "status": "In Progress",
+        "website": "https://trimfab.redmindtechnologies.com/",
+        "category": "Website"
+    },
+    {
+        "name": "Elevate A Space",
+        "description": "Type: Dynamic Website. Notes: ",
+        "status": "In Progress",
+        "website": "",
+        "category": "Website"
+    },
+    {
+        "name": "Nextron LLC",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "ZSpeciality",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Rayie Petro Chemical",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Adler",
+        "description": "Service(s): Brochure Design, Magazine Article Design & Logo Redesign. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "CTpack and Automations",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Deepakam Housing",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Deepakam Hotel",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Cafe Express",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Vevi's",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Vetri Vivasayi",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Ganesh Bakery",
+        "description": "Service(s): Menu Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Delicious Delight",
+        "description": "Service(s): Logo Design & Menu Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "MD Products",
+        "description": "Service(s): Logo Design & Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "VegX",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Empricon",
+        "description": "Service(s): Label Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "SRSMES",
+        "description": "Service(s): Banner Design & Magazine Article Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Kumariyas",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Keva Health Care",
+        "description": "Service(s): Banner Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Cathys",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Tech Dynamics",
+        "description": "Service(s): Logo Design, Brochure Design & Leaflet Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Abirami Grand Inn",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Shankra Naturals",
+        "description": "Service(s): Product Label Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Farm Fleet",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "King Idly Dosa Batter",
+        "description": "Service(s): Product Label Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "ID Eate",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Jo's Enterprises",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Surya Builders",
+        "description": "Service(s): Video Creation. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Elevate Space",
+        "description": "Service(s): Logo Design & Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Kalaimagal Achagam",
+        "description": "Service(s): Menu Card Design & Business Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Sahastra Promoters",
+        "description": "Service(s): Banner Design & Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Aishvaryam Foods",
+        "description": "Service(s): Product Label Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Jolio Jobs",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "TBH",
+        "description": "Service(s): Logo Design . Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Myroots",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Jayans",
+        "description": "Service(s): Logo Design, Packaging Design & Banner Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Vedha Jewellers",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Most India",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Align Books",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Kohinoor Transports",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "TBH",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Kalam Vision",
+        "description": "Service(s): Logo Design, Brochure Design & Business Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Vel Tech",
+        "description": "Service(s): Logo Design, Business Card, Letterhead, Brochure & Billing Receipt Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "EV TBH",
+        "description": "Service(s): 4 Logos. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Solvix Slim Belt",
+        "description": "Service(s): Small Box Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Solvix Slim Belt",
+        "description": "Service(s): Large Box Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "D.S. UPS & Batteries",
+        "description": "Service(s): Business Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "David Tyres",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Bhimsain Baijnath Pickle",
+        "description": "Service(s): Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Bhimsain Baijnath Masala",
+        "description": "Service(s): Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "NKC Ice Cream",
+        "description": "Service(s): Box Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Eitto",
+        "description": "Service(s): Packaging Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "I2Studio",
+        "description": "Service(s): Digital Business Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Kelvin Aircon",
+        "description": "Service(s): Business Card Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Vellora",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Grand Wood",
+        "description": "Service(s): Brochure Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Dream Decors",
+        "description": "Service(s): Logo Design. Notes: ",
+        "status": "Completed",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "Dream Decors",
+        "description": "Service(s): Business Card Design. Notes: ",
+        "status": "In Progress",
+        "website": "",
+        "category": "Graphic Design"
+    },
+    {
+        "name": "BOB System",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "ENS System",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "Mudra System",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "RegulaUAE",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "CreativeAI",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "WH-CRM",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    },
+    {
+        "name": "AI Guard",
+        "description": "AI Project. Type: . Service(s): . POC: ",
+        "status": "New",
+        "website": "",
+        "category": "AI"
+    }
+]

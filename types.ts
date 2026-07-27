@@ -95,6 +95,7 @@ export interface Comment {
   authorId: string;
   body: string;
   createdAt: string;
+  userName?: string;
 }
 
 export interface Reminder {

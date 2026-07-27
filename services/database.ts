@@ -151,12 +151,17 @@ export const database = {
 
   // Comments
   comments: {
-    getByTask: async (taskId: string) => apiCall(`/comments/task/${taskId}`),
+    getByTask: async (taskId: string) => apiCall(`/comments?taskId=${taskId}`),
     create: async (data: any) => apiCall('/comments', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
     delete: async (id: string) => apiCall(`/comments/${id}`, { method: 'DELETE' }),
+  },
+
+  // Activity Logs
+  activityLogs: {
+    getAll: async () => apiCall('/activity-logs'),
   },
 
   // Team Members

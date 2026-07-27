@@ -67,7 +67,7 @@ elseif ($method === 'POST') {
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+            'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
         ]);
         sendMailNotification($email, $subject, $body);
     } else {
@@ -104,7 +104,7 @@ elseif ($method === 'PUT' && $id) {
             $subject = "Your RedMind CRM Account is Approved";
             $body = renderEmailTemplate('account_approved', [
                 'name' => $existing['name'],
-                'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
             ]);
             sendMailNotification($existing['email'], $subject, $body);
         } else {

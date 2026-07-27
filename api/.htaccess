@@ -12,6 +12,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
+    # Forward the Authorization Header to PHP under CGI/FastCGI environments
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
     # Skip actual files and directories
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

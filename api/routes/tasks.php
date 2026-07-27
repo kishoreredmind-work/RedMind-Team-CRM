@@ -82,8 +82,8 @@ elseif ($method === 'POST') {
     $title = $input['title'] ?? null;
     $projectId = $input['projectId'] ?? null;
     $assignedTo = $input['assignedTo'] ?? null;
-    $status = $input['status'] ?? 'TODO';
-    $priority = $input['priority'] ?? 'MEDIUM';
+    $status = $input['status'] ?? 'To Do';
+    $priority = $input['priority'] ?? 'Medium';
     $notes = $input['notes'] ?? null;
     
     if (!$title || !$projectId) {
@@ -114,11 +114,12 @@ elseif ($method === 'POST') {
                     'body' => renderEmailTemplate('task_assignment', [
                         'name' => $uRes['name'],
                         'taskTitle' => $title,
-                        'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                        'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
                     ])
                 ];
             }
         }
+        logActivity($conn, $currentUser['user_id'], 'CREATE_TASK', "Allocated task segment: " . $title);
         respondAndContinue(true, ['id' => $taskId], null, 'Task created successfully');
 
         foreach ($emailsToSend as $mail) {
@@ -153,10 +154,10 @@ elseif ($method === 'PUT' && $id) {
         $stmt->bind_param("sssssss", $title, $projectId, $assignedTo, $status, $priority, $notes, $id);
         
         if ($stmt->execute()) {
+            $taskTitle = $title ?: $taskState['title'];
             $emailsToSend = [];
             // Trigger assignment notifications if assignee changed
             if ($assignedTo && $assignedTo !== $taskState['assigned_to']) {
-                $taskTitle = $title ?: $taskState['title'];
                 $msg = "You have been assigned to task: " . $taskTitle;
                 createNotification($conn, $assignedTo, $msg, "tasks");
                 
@@ -171,11 +172,12 @@ elseif ($method === 'PUT' && $id) {
                         'body' => renderEmailTemplate('task_assignment', [
                             'name' => $uRes['name'],
                             'taskTitle' => $taskTitle,
-                            'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                            'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
                         ])
                     ];
                 }
             }
+            logActivity($conn, $currentUser['user_id'], 'UPDATE_TASK', "Updated task: " . $taskTitle);
             respondAndContinue(true, null, null, 'Task updated successfully');
 
             foreach ($emailsToSend as $mail) {
@@ -226,12 +228,13 @@ elseif ($method === 'PUT' && $id) {
                                 'taskTitle' => $taskState['title'],
                                 'memberName' => $memName,
                                 'status' => $status,
-                                'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                                'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
                             ])
                         ];
                     }
                 }
             }
+            logActivity($conn, $currentUser['user_id'], 'UPDATE_TASK_STATUS', "Updated status to '" . ($status ?: $taskState['status']) . "' for task: " . $taskState['title']);
             respondAndContinue(true, null, null, 'Task updated successfully');
 
             foreach ($emailsToSend as $mail) {
@@ -246,10 +249,18 @@ elseif ($method === 'PUT' && $id) {
 elseif ($method === 'DELETE' && $id) {
     requireLead();
     
+    // Fetch task details for logging before deleting
+    $nStmt = $conn->prepare("SELECT title FROM tasks WHERE id = ?");
+    $nStmt->bind_param("s", $id);
+    $nStmt->execute();
+    $tDetails = $nStmt->get_result()->fetch_assoc();
+    $taskTitle = $tDetails['title'] ?? 'Unknown Task';
+
     $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ?");
     $stmt->bind_param("s", $id);
     
     if ($stmt->execute()) {
+        logActivity($conn, $currentUser['user_id'], 'DELETE_TASK', "Deleted task: " . $taskTitle);
         respond(true, null, null, 'Task deleted successfully');
     } else {
         respond(false, null, 'Failed to delete task');

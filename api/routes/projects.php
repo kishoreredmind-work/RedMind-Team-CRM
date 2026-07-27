@@ -121,12 +121,13 @@ elseif ($method === 'POST') {
                         'body' => renderEmailTemplate('project_assignment', [
                             'name' => $uRes['name'],
                             'projectName' => $name,
-                            'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                            'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
                         ])
                     ];
                 }
             }
         }
+        logActivity($conn, $currentUser['user_id'], 'CREATE_PROJECT', "Initiated project: " . $name);
         respondAndContinue(true, ['id' => $projectId], null, 'Project created successfully');
 
         foreach ($emailsToSend as $mail) {
@@ -156,6 +157,16 @@ elseif ($method === 'PUT' && $id) {
     $stmt->bind_param("sssssssss", $name, $description, $clientId, $status, $startDate, $deadline, $workingDays, $linksJson, $id);
     
     if ($stmt->execute()) {
+        // Fetch project name for activity logging and notifications
+        $projName = $name;
+        if (!$projName) {
+            $nameStmt = $conn->prepare("SELECT name FROM projects WHERE id = ?");
+            $nameStmt->bind_param("s", $id);
+            $nameStmt->execute();
+            $nRes = $nameStmt->get_result()->fetch_assoc();
+            $projName = $nRes['name'] ?? 'Unknown Project';
+        }
+
         // Fetch existing members
         $existingMembers = [];
         $eStmt = $conn->prepare("SELECT member_id FROM project_members WHERE project_id = ?");
@@ -201,16 +212,6 @@ elseif ($method === 'PUT' && $id) {
                     $insertStmt->bind_param("sss", $pmId, $id, $memberId);
                     $insertStmt->execute();
                     
-                    // Fetch project name
-                    $projName = $name;
-                    if (!$projName) {
-                        $nameStmt = $conn->prepare("SELECT name FROM projects WHERE id = ?");
-                        $nameStmt->bind_param("s", $id);
-                        $nameStmt->execute();
-                        $nRes = $nameStmt->get_result()->fetch_assoc();
-                        $projName = $nRes['name'] ?? 'Unknown Project';
-                    }
-                    
                     $msg = "You have been assigned to project: " . $projName;
                     createNotification($conn, $memberId, $msg, "projects");
                     
@@ -225,7 +226,7 @@ elseif ($method === 'PUT' && $id) {
                             'body' => renderEmailTemplate('project_assignment', [
                                 'name' => $uRes['name'],
                                 'projectName' => $projName,
-                                'loginUrl' => getenv('VITE_API_URL') ?: 'https://mydomain.com'
+                                'loginUrl' => getEnvVar('VITE_API_URL') ?: 'https://mydomain.com'
                             ])
                         ];
                     }
@@ -233,6 +234,7 @@ elseif ($method === 'PUT' && $id) {
             }
         }
         
+        logActivity($conn, $currentUser['user_id'], 'UPDATE_PROJECT', "Modified project settings or member roster: " . $projName);
         respondAndContinue(true, null, null, 'Project updated successfully');
 
         foreach ($emailsToSend as $mail) {
@@ -246,6 +248,13 @@ elseif ($method === 'PUT' && $id) {
 elseif ($method === 'DELETE' && $id) {
     requireLead();
     
+    // Fetch project details for logging before deleting
+    $nStmt = $conn->prepare("SELECT name FROM projects WHERE id = ?");
+    $nStmt->bind_param("s", $id);
+    $nStmt->execute();
+    $pDetails = $nStmt->get_result()->fetch_assoc();
+    $projName = $pDetails['name'] ?? 'Unknown Project';
+
     // Clear project members first
     $clearStmt = $conn->prepare("DELETE FROM project_members WHERE project_id = ?");
     $clearStmt->bind_param("s", $id);
@@ -255,6 +264,7 @@ elseif ($method === 'DELETE' && $id) {
     $stmt->bind_param("s", $id);
     
     if ($stmt->execute()) {
+        logActivity($conn, $currentUser['user_id'], 'DELETE_PROJECT', "Deleted project: " . $projName);
         respond(true, null, null, 'Project deleted successfully');
     } else {
         respond(false, null, 'Failed to delete project');
