@@ -9,9 +9,14 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(() => Boolean(new URLSearchParams(window.location.search).get('token')));
+  const [resetToken] = useState(() => new URLSearchParams(window.location.search).get('token') || '');
+  const [email, setEmail] = useState(() => new URLSearchParams(window.location.search).get('email') || '');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -23,7 +28,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      if (isSignUp) {
+      if (isForgotPassword) {
+        await database.auth.forgotPassword(email);
+        setSuccess('If that email belongs to an account, a password reset link has been sent.');
+        setIsForgotPassword(false);
+      } else if (isResetPassword) {
+        if (newPassword.length < 12) throw new Error('Password must be at least 12 characters');
+        if (newPassword !== confirmPassword) throw new Error('Passwords do not match');
+        await database.auth.resetPassword(email, resetToken, newPassword);
+        setSuccess('Password reset successfully. You can now log in.');
+        setIsResetPassword(false);
+        window.history.replaceState({}, '', window.location.pathname);
+      } else if (isSignUp) {
         if (!name) throw new Error("Name is required");
         await database.auth.signup(email, password, name);
         setSuccess("Account created successfully! Please wait for admin approval.");
@@ -52,10 +68,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-extrabold text-xl md:text-2xl">R</div>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-            {isSignUp ? 'Create Account' : 'RedMind Team CRM'}
+            {isForgotPassword ? 'Forgot Password' : isResetPassword ? 'Set New Password' : isSignUp ? 'Create Account' : 'RedMind Team CRM'}
           </h2>
           <p className="text-slate-400 text-[10px] mt-3 font-bold uppercase tracking-[0.2em]">
-            {isSignUp ? 'Join the execution team' : 'Authorized Personnel Only'}
+            {isForgotPassword || isResetPassword ? 'SECURE ACCOUNT RECOVERY' : isSignUp ? 'Join the execution team' : 'Authorized Personnel Only'}
           </p>
         </div>
 
@@ -75,7 +91,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 relative">
           <div className="space-y-4">
-            {isSignUp && (
+            {isSignUp && !isForgotPassword && !isResetPassword && (
               <input 
                 required
                 type="text" 
@@ -86,7 +102,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 className="w-full px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:bg-white focus:border-black outline-none transition-all font-bold text-slate-800 text-sm disabled:opacity-50" 
               />
             )}
-            <input 
+            <input
               required
               type="email" 
               value={email}
@@ -95,7 +111,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               disabled={isLoading}
               className="w-full px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:bg-white focus:border-black outline-none transition-all font-bold text-slate-800 text-sm disabled:opacity-50" 
             />
-            <input 
+            {!isForgotPassword && !isResetPassword && <input
               required
               type="password" 
               value={password}
@@ -103,22 +119,32 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               placeholder="Security Key"
               disabled={isLoading}
               className="w-full px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:bg-white focus:border-black outline-none transition-all font-bold text-slate-800 text-sm disabled:opacity-50" 
-            />
+            />}
+            {isResetPassword && <>
+              <input required type="password" minLength={12} value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (12+ characters)" disabled={isLoading} className="w-full px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:bg-white focus:border-black outline-none transition-all font-bold text-slate-800 text-sm disabled:opacity-50" />
+              <input required type="password" minLength={12} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Confirm new password" disabled={isLoading} className="w-full px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-[1.5rem] bg-slate-50 border border-slate-100 focus:bg-white focus:border-black outline-none transition-all font-bold text-slate-800 text-sm disabled:opacity-50" />
+            </>}
           </div>
           <button 
             type="submit"
             disabled={isLoading}
             className="w-full bg-black hover:scale-[1.02] active:scale-[0.98] text-white font-extrabold py-4 md:py-5 px-4 rounded-full transition-all duration-300 shadow-xl mt-4 text-sm disabled:bg-slate-400 disabled:scale-100"
           >
-            {isLoading ? 'Processing...' : (isSignUp ? 'Request Access' : 'Access Dashboard')}
+            {isLoading ? 'Processing...' : (isForgotPassword ? 'Send Reset Link' : isResetPassword ? 'Reset Password' : isSignUp ? 'Request Access' : 'Access Dashboard')}
           </button>
         </form>
 
         <div className="mt-8 text-center text-xs font-bold text-slate-400">
-          {isSignUp ? (
+          {isForgotPassword || isResetPassword ? (
+            <button onClick={() => { setIsForgotPassword(false); setIsResetPassword(false); }} className="text-black hover:underline tracking-tight">Back to Login</button>
+          ) : isSignUp ? (
             <button onClick={() => setIsSignUp(false)} className="text-black hover:underline tracking-tight">Already have an account? Login</button>
           ) : (
-            <button onClick={() => setIsSignUp(true)} className="text-black hover:underline tracking-tight">Need access? Create Account</button>
+            <div className="space-y-3">
+              <button onClick={() => setIsSignUp(true)} className="text-black hover:underline tracking-tight">Need access? Create Account</button>
+              <br />
+              <button onClick={() => { setIsForgotPassword(true); setError(''); setSuccess(''); }} className="text-slate-500 hover:text-black hover:underline tracking-tight">Forgot password?</button>
+            </div>
           )}
         </div>
         

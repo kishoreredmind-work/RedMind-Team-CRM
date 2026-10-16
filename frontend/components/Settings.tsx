@@ -16,6 +16,10 @@ const Settings: React.FC<SettingsProps> = ({ user, onUpdateUser }) => {
     name: user.name,
     email: user.email
   });
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +31,30 @@ const Settings: React.FC<SettingsProps> = ({ user, onUpdateUser }) => {
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordMessage('');
+    if (passwordForm.next.length < 12) {
+      setPasswordError('New password must be at least 12 characters.');
+      return;
+    }
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      await database.auth.changePassword(passwordForm.current, passwordForm.next);
+      setPasswordForm({ current: '', next: '', confirm: '' });
+      setPasswordMessage('Password changed successfully.');
+    } catch (error: any) {
+      setPasswordError(error.message || 'Unable to change password.');
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +132,19 @@ const Settings: React.FC<SettingsProps> = ({ user, onUpdateUser }) => {
            <div className="pt-8 border-t border-slate-50 flex justify-end gap-4">
               <button type="submit" className="bg-black text-white px-10 py-4 rounded-full font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10">Save Changes</button>
            </div>
+        </form>
+      </div>
+
+      <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-sm">
+        <h4 className="text-lg font-black text-slate-900 mb-1">Change Password</h4>
+        <p className="text-sm font-bold text-slate-400 mb-6">Use at least 12 characters and never reuse a shared password.</p>
+        {passwordError && <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-xs font-bold text-red-600">{passwordError}</p>}
+        {passwordMessage && <p className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-600">{passwordMessage}</p>}
+        <form onSubmit={handlePasswordChange} className="space-y-4">
+          <input required type="password" minLength={12} autoComplete="current-password" placeholder="Current password" value={passwordForm.current} onChange={e => setPasswordForm({ ...passwordForm, current: e.target.value })} className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-black font-bold text-sm" />
+          <input required type="password" minLength={12} autoComplete="new-password" placeholder="New password" value={passwordForm.next} onChange={e => setPasswordForm({ ...passwordForm, next: e.target.value })} className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-black font-bold text-sm" />
+          <input required type="password" minLength={12} autoComplete="new-password" placeholder="Confirm new password" value={passwordForm.confirm} onChange={e => setPasswordForm({ ...passwordForm, confirm: e.target.value })} className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-black font-bold text-sm" />
+          <button disabled={isChangingPassword} type="submit" className="bg-black text-white px-8 py-4 rounded-full font-black text-sm disabled:bg-slate-400">{isChangingPassword ? 'Updating...' : 'Change Password'}</button>
         </form>
       </div>
 

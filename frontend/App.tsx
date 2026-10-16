@@ -26,6 +26,7 @@ const App: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [dataError, setDataError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('redmin_active_tab') || 'dashboard';
   });
@@ -187,10 +188,15 @@ const App: React.FC = () => {
         .filter(Boolean);
 
       if (failures.length > 0) {
-        console.warn("CRM Sync warning: Failed to load: " + failures.join(', '));
+        const message = "Unable to load: " + failures.join(', ') + ". Check the API connection and try again.";
+        setDataError(message);
+        console.warn("CRM Sync warning: " + message);
+      } else {
+        setDataError(null);
       }
     } catch (error: any) {
       console.error("API Load Failed", error);
+      setDataError(error?.message || "Unable to load CRM data. Check the API connection and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -283,6 +289,19 @@ const App: React.FC = () => {
       setSearchQuery={setSearchQuery}
       searchResults={searchResults}
     >
+      {dataError && (
+        <div className="mx-6 mt-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700">
+          {dataError}
+          <button
+            type="button"
+            onClick={fetchAllData}
+            className="ml-3 underline underline-offset-2"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-full space-y-4 animate-pulse">
            <div className="w-12 h-12 bg-black rounded-xl"></div>

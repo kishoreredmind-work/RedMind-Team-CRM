@@ -1,5 +1,6 @@
 // MySQL Database Service
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const configuredApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = configuredApiUrl.replace(/\/+$/, '').replace(/\/api$/, '');
 
 interface ApiResponse<T> {
   success: boolean;
@@ -10,7 +11,7 @@ interface ApiResponse<T> {
 
 // Helper function for API calls
 async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${API_URL}${endpoint}`;
+  const url = `${API_URL}/api${endpoint}`;
   
   // Extract token from localStorage
   const rawUser = localStorage.getItem('redmin_current_user');
@@ -84,6 +85,24 @@ export const database = {
       return apiCall(`/auth/profile/${userId}`, {
         method: 'PUT',
         body: JSON.stringify(data),
+      });
+    },
+    changePassword: async (currentPassword: string, newPassword: string) => {
+      return apiCall('/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+    },
+    forgotPassword: async (email: string) => {
+      return apiCall('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+    },
+    resetPassword: async (email: string, token: string, password: string) => {
+      return apiCall('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ email, token, password }),
       });
     },
   },
